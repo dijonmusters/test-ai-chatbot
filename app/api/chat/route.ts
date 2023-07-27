@@ -20,6 +20,7 @@ const openai = new OpenAIApi(configuration)
 export async function POST(req: Request) {
   console.log(cookies().getAll())
   const supabase = createRouteHandlerClient<Database>({ cookies })
+  console.log(supabase)
   const json = await req.json()
   const { messages, previewToken } = json
   const userId = (await auth())?.user.id
@@ -61,8 +62,14 @@ export async function POST(req: Request) {
           }
         ]
       }
+      console.log('completed')
       // Insert chat into database.
-      await supabase.from('chats').upsert({ id, payload }).throwOnError()
+      const { data, error } = await supabase
+        .from('chats')
+        .upsert({ id, payload })
+        .select()
+      console.log(data)
+      console.log(error)
     }
   })
 
