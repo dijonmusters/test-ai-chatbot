@@ -18,12 +18,18 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration)
 
-export async function POST(req: Request) {
-  const cookieList: ReadonlyRequestCookies = await new Promise(resolve => {
+async function getCookies(
+  cookies: () => ReadonlyRequestCookies
+): Promise<ReadonlyRequestCookies> {
+  return new Promise(resolve => {
     setTimeout(() => {
       resolve(cookies())
     }, 1000)
   })
+}
+
+export async function POST(req: Request) {
+  const cookieList = await getCookies(cookies)
   console.log(cookieList.getAll())
   const testCookies = () => cookieList
   const supabase = createRouteHandlerClient<Database>({ cookies: testCookies })
