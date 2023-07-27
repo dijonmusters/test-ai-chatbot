@@ -7,7 +7,6 @@ import { Database } from '@/lib/db_types'
 
 import { auth } from '@/auth'
 import { nanoid } from '@/lib/utils'
-import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
 
 export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
@@ -18,21 +17,10 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration)
 
-async function getCookies(
-  cookies: () => ReadonlyRequestCookies
-): Promise<ReadonlyRequestCookies> {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve(cookies())
-    }, 1000)
-  })
-}
-
 export async function POST(req: Request) {
-  const cookieList = await getCookies(cookies)
-  console.log(cookieList.getAll())
-  const testCookies = () => cookieList
-  const supabase = createRouteHandlerClient<Database>({ cookies: testCookies })
+  const supabase = createRouteHandlerClient<Database>({
+    cookies: () => cookies()
+  })
   const json = await req.json()
   const { messages, previewToken } = json
   const userId = (await auth())?.user.id
