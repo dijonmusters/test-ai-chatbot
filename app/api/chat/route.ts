@@ -21,7 +21,6 @@ export async function POST(req: Request) {
   cookies().set('new-cookie', 'working')
   console.log(cookies().getAll())
   const supabase = createRouteHandlerClient<Database>({ cookies })
-  console.log(supabase)
   const json = await req.json()
   const { messages, previewToken } = json
   const userId = (await auth())?.user.id
@@ -68,8 +67,7 @@ export async function POST(req: Request) {
         .from('chats')
         .upsert({ id, payload })
         .select()
-      console.log(data)
-      console.log(error)
+      console.log({ data, error })
     }
   })
 
