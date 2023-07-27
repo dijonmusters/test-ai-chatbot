@@ -18,9 +18,10 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration)
 
 export async function POST(req: Request) {
-  cookies().set('new-cookie', 'working')
-  console.log(cookies().getAll())
-  const supabase = createRouteHandlerClient<Database>({ cookies })
+  const cookieList = cookies()
+  console.log(cookieList.getAll())
+  const testCookies = () => cookieList
+  const supabase = createRouteHandlerClient<Database>({ cookies: testCookies })
   const json = await req.json()
   const { messages, previewToken } = json
   const userId = (await auth())?.user.id
