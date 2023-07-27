@@ -1,13 +1,12 @@
 import 'server-only'
 import { OpenAIStream, StreamingTextResponse } from 'ai'
 import { Configuration, OpenAIApi } from 'openai-edge'
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { Database } from '@/lib/db_types'
 
 import { auth } from '@/auth'
 import { nanoid } from '@/lib/utils'
-import { NextRequest, NextResponse } from 'next/server'
 
 export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
@@ -18,10 +17,10 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration)
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
+  cookies().set('new-cookie', 'working')
   console.log(cookies().getAll())
-  const res = NextResponse.next()
-  const supabase = createMiddlewareClient<Database>({ req, res })
+  const supabase = createRouteHandlerClient<Database>({ cookies })
   console.log(supabase)
   const json = await req.json()
   const { messages, previewToken } = json
@@ -37,14 +36,14 @@ export async function POST(req: NextRequest) {
     configuration.apiKey = previewToken
   }
 
-  const response = await openai.createChatCompletion({
+  const res = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo',
     messages,
     temperature: 0.7,
     stream: true
   })
 
-  const stream = OpenAIStream(response, {
+  const stream = OpenAIStream(res, {
     async onCompletion(completion) {
       const title = json.messages[0].content.substring(0, 100)
       const id = json.id ?? nanoid()
@@ -64,7 +63,6 @@ export async function POST(req: NextRequest) {
           }
         ]
       }
-      console.log('completed')
       // Insert chat into database.
       const { data, error } = await supabase
         .from('chats')
