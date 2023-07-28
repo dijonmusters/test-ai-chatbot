@@ -17,9 +17,12 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration)
 
 export async function POST(req: Request) {
-  const chocChip = cookies()
+  // const chocChip = cookies()
+  // const supabase = createRouteHandlerClient<Database>({
+  //   cookies: () => chocChip
+  // })
   const supabase = createRouteHandlerClient<Database>({
-    cookies: () => chocChip
+    cookies
   })
   const json = await req.json()
   const { messages, previewToken } = json
@@ -47,6 +50,7 @@ export async function POST(req: Request) {
 
   const stream = OpenAIStream(res, {
     async onCompletion(completion) {
+      console.log({ completion })
       const title = json.messages[0].content.substring(0, 100)
       const id = json.id ?? nanoid()
       const createdAt = Date.now()
