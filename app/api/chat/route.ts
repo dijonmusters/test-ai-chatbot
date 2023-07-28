@@ -48,6 +48,8 @@ export async function POST(req: Request) {
     stream: true
   })
 
+  await supabase.from('tests').insert({ title: 'outside stream' })
+
   const stream = OpenAIStream(res, {
     async onCompletion(completion) {
       const title = json.messages[0].content.substring(0, 100)
@@ -68,6 +70,7 @@ export async function POST(req: Request) {
           }
         ]
       }
+      await supabase.from('tests').insert({ title: 'inside stream' })
       // Insert chat into database.
       const { data, error } = await supabase
         .from('chats')
