@@ -29,6 +29,8 @@ export async function POST(req: Request) {
     .from('tests')
     .insert({ title: 'outside stream' })
 
+  console.log({ data, error })
+
   return NextResponse.json({ data, error })
   // const json = await req.json()
   // const { messages, previewToken } = json
