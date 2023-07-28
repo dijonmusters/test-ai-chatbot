@@ -1,21 +1,21 @@
-import 'server-only'
-import { OpenAIStream, StreamingTextResponse } from 'ai'
-import { Configuration, OpenAIApi } from 'openai-edge'
+// import 'server-only'
+// import { OpenAIStream, StreamingTextResponse } from 'ai'
+// import { Configuration, OpenAIApi } from 'openai-edge'
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { Database } from '@/lib/db_types'
 
-import { nanoid } from '@/lib/utils'
+// import { nanoid } from '@/lib/utils'
 import { NextResponse } from 'next/server'
 
 export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
 
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY
-})
+// const configuration = new Configuration({
+//   apiKey: process.env.OPENAI_API_KEY
+// })
 
-const openai = new OpenAIApi(configuration)
+// const openai = new OpenAIApi(configuration)
 
 export async function POST(req: Request) {
   // const chocChip = cookies()
